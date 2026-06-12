@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { AuditTimeline } from "../src/components/AuditTimeline";
 import { DashboardClient } from "../src/components/DashboardClient";
 import * as api from "../src/api";
 
@@ -47,5 +48,26 @@ describe("dashboard", () => {
     await user.click(await screen.findByRole("button", { name: /approve/i }));
 
     expect(api.approveTask).toHaveBeenCalledWith("task-demo");
+  });
+
+  it("formats audit timestamps deterministically for hydration", () => {
+    render(
+      <AuditTimeline
+        logs={[
+          {
+            id: "log-test",
+            task_id: "task-demo",
+            property_id: "prop-b",
+            node: "human_review",
+            agent_name: "Owner",
+            status: "waiting_approval",
+            message: "Workflow paused for owner approval.",
+            created_at: "2026-06-12T10:24:18Z"
+          }
+        ]}
+      />
+    );
+
+    expect(screen.getByText("10:24")).toBeInTheDocument();
   });
 });

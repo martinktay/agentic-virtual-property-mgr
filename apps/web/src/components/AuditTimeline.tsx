@@ -1,5 +1,16 @@
 import type { TaskLog } from "../types";
 
+const auditTimeFormatter = new Intl.DateTimeFormat("en-GB", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+  timeZone: "UTC"
+});
+
+function formatAuditTime(timestamp: string) {
+  return auditTimeFormatter.format(new Date(timestamp));
+}
+
 export function AuditTimeline({ logs }: { logs: TaskLog[] }) {
   return (
     <section className="surface timelineSurface">
@@ -13,7 +24,7 @@ export function AuditTimeline({ logs }: { logs: TaskLog[] }) {
         {logs.map((log) => (
           <li key={log.id}>
             <span className={`nodeDot ${log.status}`} />
-            <time>{new Date(log.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>
+            <time>{formatAuditTime(log.created_at)}</time>
             <strong>{log.agent_name}</strong>
             <span className={`badge ${log.status}`}>{log.status.replace("_", " ")}</span>
             <p>{log.message}</p>
@@ -23,4 +34,3 @@ export function AuditTimeline({ logs }: { logs: TaskLog[] }) {
     </section>
   );
 }
-

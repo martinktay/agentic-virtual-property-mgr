@@ -26,7 +26,7 @@ export function ApprovalModal({ task, onApprove, onReject }: Props) {
       <div className="approvalStats">
         <div>
           <span>Estimated Cost</span>
-          <strong>£{task.approval_request.cost_estimate ?? 0}</strong>
+          <strong>GBP {task.approval_request.cost_estimate ?? 0}</strong>
         </div>
         <div>
           <span>Risk Level</span>
@@ -41,4 +41,3 @@ export function ApprovalModal({ task, onApprove, onReject }: Props) {
     </section>
   );
 }
-
