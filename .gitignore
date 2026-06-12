@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.pytest-deps/
+.test-runtime/
+*.pyc
+*.egg-info/
+*.sqlite3
+node_modules/
+.next/
+coverage/
+.superpowers/
