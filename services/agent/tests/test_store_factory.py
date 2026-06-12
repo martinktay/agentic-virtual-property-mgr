@@ -7,12 +7,38 @@ def test_store_factory_uses_sqlite_without_production_env(monkeypatch, tmp_path)
     monkeypatch.delenv("DATABASE_URL", raising=False)
     monkeypatch.delenv("AURORA_DSQL_DATABASE_URL", raising=False)
     monkeypatch.delenv("AURORA_DSQL_ENDPOINT", raising=False)
+    monkeypatch.delenv("SEED_DEMO_DATA", raising=False)
     monkeypatch.setenv("SQLITE_DB_PATH", str(tmp_path / "agent.sqlite3"))
 
     repository = build_repository()
 
     assert isinstance(repository, SQLiteRepository)
     assert [item.id for item in repository.list_properties()] == ["prop-a", "prop-b", "prop-c"]
+    task = repository.get_task("task-demo")
+    assert task is not None
+    assert task.status == "waiting_approval"
+    assert task.approval_request is not None
+    assert task.approval_request.cost_estimate == 850
+    assert [log.node for log in repository.list_logs("task-demo")] == [
+        "orchestrator",
+        "maintenance",
+        "finance",
+        "compliance",
+        "human_review",
+    ]
+
+
+def test_store_factory_can_disable_demo_task_seed(monkeypatch, tmp_path):
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.delenv("AURORA_DSQL_DATABASE_URL", raising=False)
+    monkeypatch.delenv("AURORA_DSQL_ENDPOINT", raising=False)
+    monkeypatch.setenv("SEED_DEMO_DATA", "false")
+    monkeypatch.setenv("SQLITE_DB_PATH", str(tmp_path / "agent.sqlite3"))
+
+    repository = build_repository()
+
+    assert repository.get_task("task-demo") is None
+    assert repository.list_tasks() == []
 
 
 def test_store_factory_uses_postgres_when_database_url_exists(monkeypatch):
@@ -31,6 +57,7 @@ def test_store_factory_uses_postgres_when_database_url_exists(monkeypatch):
             seeded.extend(properties)
 
     monkeypatch.setenv("DATABASE_URL", "postgresql://admin:token@example.dsql.us-east-1.on.aws:5432/postgres?sslmode=require")
+    monkeypatch.setenv("SEED_DEMO_DATA", "false")
     monkeypatch.setattr("app.store.postgres.PostgresRepository", FakePostgresRepository)
 
     repository = build_repository()

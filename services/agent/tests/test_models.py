@@ -1,5 +1,5 @@
 from app.models import ApprovalRequest, TaskRun
-from app.seed import seed_properties
+from app.seed import seed_demo_logs, seed_demo_task, seed_properties
 
 
 def test_seed_properties_include_property_b_power_watch():
@@ -37,3 +37,32 @@ def test_approval_request_exposes_cost_and_risk():
     assert approval.cost_estimate == 850
     assert approval.risk.startswith("High-cost")
 
+
+def test_seed_demo_task_requires_human_review_for_power_repair():
+    task = seed_demo_task()
+
+    assert task.id == "task-demo"
+    assert task.property_id == "prop-b"
+    assert task.status == "waiting_approval"
+    assert task.approval_required is True
+    assert task.approval_request is not None
+    assert task.approval_request.cost_estimate == 850
+
+
+def test_seed_demo_logs_create_agentic_timeline():
+    logs = seed_demo_logs()
+
+    assert [log.id for log in logs] == [
+        "log-demo-orchestrator",
+        "log-demo-maintenance",
+        "log-demo-finance",
+        "log-demo-compliance",
+        "log-demo-human-review",
+    ]
+    assert [log.node for log in logs] == [
+        "orchestrator",
+        "maintenance",
+        "finance",
+        "compliance",
+        "human_review",
+    ]
