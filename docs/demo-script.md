@@ -34,9 +34,18 @@ npm run dev
 
 ## Scaling Talking Points
 
-- SQLite is for demo portability.
-- The repository interface can move to Postgres or AWS Aurora DSQL.
+- SQLite is local fallback only.
+- Production selects Aurora DSQL through `DATABASE_URL` or `AURORA_DSQL_ENDPOINT`.
 - Audit logs provide operational traceability.
 - LangGraph checkpointing allows interrupted work to resume instead of restarting.
 - HITL approval keeps risky decisions under human control.
 
+## Submission Screenshot Checklist
+
+Capture:
+
+- Vercel deployment dashboard showing the successful production build.
+- Vercel project environment variables with secret values hidden.
+- Vercel Storage or AWS console showing the Aurora DSQL cluster/connection.
+- Dashboard showing Property B in attention state and the approval panel.
+- Backend terminal logs or test output showing the LangGraph/CrewAI workflow path.

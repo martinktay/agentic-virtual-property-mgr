@@ -1,19 +1,12 @@
-from pathlib import Path
-
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from app.models import TaskDetail, TaskRun
-from app.seed import seed_properties
-from app.store.sqlite import SQLiteRepository
+from app.store.factory import build_repository
 from app.workflows.graph import AgentWorkflow
 
-DB_PATH = Path(__file__).resolve().parents[1] / "data" / "agent.sqlite3"
-
-repository = SQLiteRepository(DB_PATH)
-repository.initialize()
-repository.seed_properties(seed_properties())
+repository = build_repository()
 workflow = AgentWorkflow(repository)
 
 app = FastAPI(title="Agentic Virtual Property Manager Agent Service")
@@ -80,4 +73,3 @@ def reject_task(task_id: str):
         raise HTTPException(status_code=404, detail="task not found") from None
     except RuntimeError:
         raise HTTPException(status_code=409, detail="task is not waiting for approval") from None
-

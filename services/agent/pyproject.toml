@@ -8,6 +8,8 @@ dependencies = [
   "fastapi>=0.115.0",
   "httpx>=0.28.0",
   "langgraph>=0.2.60",
+  "boto3>=1.35.0",
+  "pg8000>=1.31.0",
   "pydantic>=2.10.0",
   "uvicorn>=0.34.0"
 ]
@@ -21,4 +23,3 @@ dev = [
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
-
